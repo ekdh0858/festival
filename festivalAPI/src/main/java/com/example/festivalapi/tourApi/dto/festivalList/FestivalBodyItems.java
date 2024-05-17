@@ -14,6 +14,9 @@ public class FestivalBodyItems {
     @JsonProperty("items")
     private FestivalItem items;
 
+    @JsonProperty("totalCount")
+    private int totalCount;
+
     private String depth="3";
 
 }
