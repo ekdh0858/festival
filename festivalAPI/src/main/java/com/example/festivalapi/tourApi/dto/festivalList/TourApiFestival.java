@@ -1,6 +1,5 @@
 package com.example.festivalapi.tourApi.dto.festivalList;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.*;
 
@@ -10,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonNaming
-public class Festival {
+public class TourApiFestival {
     private long contentid;
     private String title;
     private String firstimage;

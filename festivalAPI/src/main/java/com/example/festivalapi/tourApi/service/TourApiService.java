@@ -1,10 +1,12 @@
 package com.example.festivalapi.tourApi.service;
 
 import com.example.festivalapi.config.RestTemplate.CustomApiException;
-import com.example.festivalapi.tourApi.dto.festivalInfo.FestivalInfoResponseDto;
-import com.example.festivalapi.tourApi.dto.festivalList.Festival;
+import com.example.festivalapi.festival.Entity.Festival;
+import com.example.festivalapi.festival.repository.FestivalRepository;
 import com.example.festivalapi.tourApi.dto.festivalInfo.FestivalInfo;
+import com.example.festivalapi.tourApi.dto.festivalInfo.FestivalInfoResponseDto;
 import com.example.festivalapi.tourApi.dto.festivalList.FestivalResponseDto;
+import com.example.festivalapi.tourApi.dto.festivalList.TourApiFestival;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,13 +26,12 @@ import java.util.List;
 public class TourApiService {
 
     private final RestTemplate restTemplate;
+    private final FestivalRepository festivalRepository;
 
     @Value("${tour.api.key}")
     private String tourApiKey;
 
-    String tourAPiFestivalURL = "http://apis.data.go.kr/B551011/KorService1/searchFestival1?_type=json&numOfRows=15&pageNo=1&MobileOS=ETC&MobileApp=tset&eventStartDate=20240101&serviceKey="
-            +tourApiKey;
-    public List<Festival> restTemplateTest(int numOfRows,int pageNo, String eventStartDate) {
+    public List<TourApiFestival> restTemplateTest(int numOfRows, int pageNo, String eventStartDate) {
         URI uri = UriComponentsBuilder
                 .fromUriString("http://apis.data.go.kr/B551011/KorService1")
                 .path("/searchFestival1")
@@ -88,6 +89,58 @@ public class TourApiService {
             // 기타 RestTemplate 오류 처리
             log.error("RestTemplate 오류: {}", e.getMessage());
             throw new CustomApiException("RestTemplate 오류가 발생했습니다.");
+        }
+    }
+
+    // 업데이트 될 것들 저장하기.
+    public void saveNewFestivals() {
+        List<Festival> festivals = festivalRepository.findAll();
+
+        if(festivals.size() == 0 ){
+            URI uri = UriComponentsBuilder
+                    .fromUriString("http://apis.data.go.kr/B551011/KorService1")
+                    .path("/searchFestival1")
+                    .queryParam("numOfRows",1)
+                    .queryParam("pageNo",1)
+                    .queryParam("_type","json")
+                    .queryParam("MobileOS","ETC")
+                    .queryParam("MobileApp","web for test")
+                    .queryParam("eventStartDate","20240101")
+                    .queryParam("serviceKey",tourApiKey)
+                    .encode()
+                    .build()
+                    .toUri();
+            log.info(uri.toString());
+            try {
+                FestivalResponseDto response = restTemplate.getForObject(uri, FestivalResponseDto.class);
+
+                // 정상적인 응답인 경우
+                int totalCount = response.getResponse().getBody().getTotalCount();
+                URI newUri = UriComponentsBuilder
+                        .fromUriString("http://apis.data.go.kr/B551011/KorService1")
+                        .path("/searchFestival1")
+                        .queryParam("numOfRows",totalCount)
+                        .queryParam("pageNo",1)
+                        .queryParam("_type","json")
+                        .queryParam("MobileOS","ETC")
+                        .queryParam("MobileApp","web for test")
+                        .queryParam("eventStartDate","20240101")
+                        .queryParam("serviceKey",tourApiKey)
+                        .encode()
+                        .build()
+                        .toUri();
+                FestivalResponseDto newResponse = restTemplate.getForObject(newUri,FestivalResponseDto.class);
+                List<TourApiFestival> festivalList = newResponse.getResponse().getBody().getItems().getItem();
+//                festivalList.stream().map()
+            } catch (HttpClientErrorException e) {
+                // HTTP 클라이언트 오류 처리
+                log.error("HTTP 클라이언트 오류: {}", e.getRawStatusCode());
+                throw new CustomApiException("HTTP 클라이언트 오류가 발생했습니다.");
+            } catch (RestClientException e) {
+                // 기타 RestTemplate 오류 처리
+                log.error("RestTemplate 오류: {}", e.getMessage());
+                throw new CustomApiException("RestTemplate 오류가 발생했습니다.");
+            }
         }
     }
 }
