@@ -1,0 +1,30 @@
+tour.api.key: c9VX3a4eoy%2BxAIttWpfvO%2Bmm0IeUcx4bbSk6%2FE9RRHXf5zztlkLeZ6xFL1Pzf76HOX5LXvWQZPSjLk8KFtYfhQ%3D%3D
+
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: root
+#    password: 0858
+#    url: jdbc:mysql://localhost:3306/festival
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    username: admin
+#    password: admin1111
+#    url: jdbc:mysql://festivaldb.crqeguiequ4e.ap-northeast-2.rds.amazonaws.com:3306/festival
+#  jpa:
+#    hibernate:
+#      ddl-auto: update
+#    show-sql: true
+#---
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 0858
+    url: jdbc:mysql://localhost:3306/board
