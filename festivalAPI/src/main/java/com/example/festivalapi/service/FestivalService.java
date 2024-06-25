@@ -1,9 +1,9 @@
 package com.example.festivalapi.service;
 
 import com.example.festivalapi.Exception.ResourceNotFoundException;
+import com.example.festivalapi.dto.festival.FestivalListDto;
 import com.example.festivalapi.dto.festival.FestivalListResDto;
 import com.example.festivalapi.dto.festival.FestivalReqDto;
-import com.example.festivalapi.dto.festival.FestivalListDto;
 import com.example.festivalapi.entity.festival.FestivalDetail;
 import com.example.festivalapi.entity.festival.FestivalIntro;
 import com.example.festivalapi.entity.festival.FestivalList;
@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -39,14 +41,18 @@ public class FestivalService {
 
     public FestivalListResDto  getFestivals(Pageable pageable, Long lastItemId){
         Page<FestivalList> festivals;
+        LocalDate currentDate = LocalDate.now();
+
+
         if (lastItemId != null) {
             festivalRepository.findById(lastItemId).orElseThrow(
-                    ()-> new ResourceNotFoundException("Id에 해당하는 정보가 없습니다.")
+                    () -> new ResourceNotFoundException("Id에 해당하는 정보가 없습니다.")
             );
             festivals = festivalRepository.findByIdGreaterThanOrderByIdAsc(lastItemId, pageable);
         } else {
-            festivals = festivalRepository.findAll(pageable);
+            festivals = festivalRepository.findAllOrderByPriority(currentDate, pageable);
         }
+
         Page<FestivalListDto> festivalListDtoPage = festivals.map(FestivalListDto::new);
         return new FestivalListResDto(festivalListDtoPage);
     }
