@@ -1,6 +1,7 @@
 package com.example.festivalapi.controller;
 
 import com.example.festivalapi.Exception.ResourceNotFoundException;
+import com.example.festivalapi.dto.festival.FestivalByContentIdDto;
 import com.example.festivalapi.dto.festival.FestivalListDto;
 import com.example.festivalapi.dto.festival.FestivalListResDto;
 import com.example.festivalapi.dto.festival.FestivalReqDto;
@@ -43,8 +44,8 @@ public class FestivalController {
     }
 
     @GetMapping( "/{contentId}")
-    public ResponseEntity<FestivalListDto> getFestival(@PathVariable Long contentId){
-        FestivalListDto festival = festivalService.getFestivalByContentId(contentId);
+    public ResponseEntity<FestivalByContentIdDto> getFestival(@PathVariable Long contentId){
+        FestivalByContentIdDto festival = festivalService.getFestivalByContentId(contentId);
         return new ResponseEntity<>(festival, HttpStatus.OK);
     }
 

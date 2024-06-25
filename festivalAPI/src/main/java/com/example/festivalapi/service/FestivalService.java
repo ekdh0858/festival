@@ -1,6 +1,7 @@
 package com.example.festivalapi.service;
 
 import com.example.festivalapi.Exception.ResourceNotFoundException;
+import com.example.festivalapi.dto.festival.FestivalByContentIdDto;
 import com.example.festivalapi.dto.festival.FestivalListDto;
 import com.example.festivalapi.dto.festival.FestivalListResDto;
 import com.example.festivalapi.dto.festival.FestivalReqDto;
@@ -34,9 +35,20 @@ public class FestivalService {
         return resDto;
     }
 
-    public FestivalListDto getFestivalByContentId(Long contentId) {
+    public FestivalByContentIdDto getFestivalByContentId(Long contentId) {
+        FestivalDetail festivalDetail = detailRepository.findByContentId(contentId).orElseThrow(
+                () -> new ResourceNotFoundException("Id에 해당하는 정보가 없습니다.")
+        );
+        FestivalIntro festivalIntro = introRepository.findByContentId(contentId).orElseThrow(
+                () -> new ResourceNotFoundException("Id에 해당하는 정보가 없습니다.")
+        );
+        FestivalList festivalList = festivalRepository.findByContentId(contentId).orElseThrow(
+                () -> new ResourceNotFoundException("Id에 해당하는 정보가 없습니다.")
+        );
 
-        return festivalRepository.findByContentId(contentId).stream().map(FestivalListDto::new).findAny().orElseThrow();
+        FestivalByContentIdDto resDto =  new FestivalByContentIdDto(festivalList,festivalIntro,festivalDetail);
+        return resDto;
+
     }
 
     public FestivalListResDto  getFestivals(Pageable pageable, Long lastItemId){
